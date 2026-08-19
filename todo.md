@@ -45,10 +45,19 @@
 - Identidade visual: somente escala de cinzas na interface principal; nenhum destaque cromático fora dessa escala.
 
 - [x] Configurar repositório privado no GitHub e sincronizar commits por marcos
-- [ ] Executar cada ciclo localmente com typecheck, Vitest e preview antes do commit
+- [x] Executar cada ciclo localmente com typecheck, Vitest e preview antes do commit
 - [ ] Registrar no histórico de commits a evolução por etapa funcional
 - [x] Configurar nome e e-mail de autoria dos commits como osacra e revisar atribuições do projeto
 - [x] Reescrever ou documentar o histórico inicial para que os commits relevantes reflitam a autoria osacra
 - [x] Revisar README e documentação para remover atribuições genéricas que não representem o projeto final
 - [x] Revisar README, todo.md e demais arquivos documentais e remover ou ajustar atribuições genéricas de autoria
 - [x] Executar verificação final focada em referências de autoria indevidas e registrar as exceções técnicas aceitáveis
+
+- [x] Auditar e substituir textos, navegação, nomes de menu e componentes que ainda pareçam template ou demonstração genérica
+- [x] Recomeçar a interface com linguagem visual autoral, conteúdo contextual e decisões de produto consistentes
+- [x] Validar que a experiência final não contém placeholders como Page 1, Page 2, Example Page ou Sign in to continue
+- [x] Criar páginas reais para Movimentações, Contas, Categorias, Relatórios e Configurações ou remover links ainda sem destino
+- [x] Reexecutar varredura final por Page 1, Page 2, Example Page e Sign in to continue após as edições
+- [x] Rodar novamente typecheck, Vitest e preview e só então registrar o commit da evolução visual
+- [ ] Registrar um commit específico da evolução visual somente após o ciclo validado de typecheck, Vitest e preview
+- [ ] Atualizar o histórico de commits e o todo.md após publicar o commit visual no GitHub

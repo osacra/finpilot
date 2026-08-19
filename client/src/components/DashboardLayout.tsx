@@ -1,262 +1,71 @@
 import { useAuth } from "@/_core/hooks/useAuth";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import {
-  Sidebar,
-  SidebarContent,
-  SidebarFooter,
-  SidebarHeader,
-  SidebarInset,
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-  SidebarProvider,
-  SidebarTrigger,
-  useSidebar,
-} from "@/components/ui/sidebar";
 import { startLogin } from "@/const";
-import { useIsMobile } from "@/hooks/useMobile";
-import { LayoutDashboard, LogOut, PanelLeft, Users } from "lucide-react";
-import { CSSProperties, useEffect, useRef, useState } from "react";
+import { Building2, ChevronDown, FileBarChart2, LayoutDashboard, LogOut, Menu, Settings2, Tags, WalletCards, X } from "lucide-react";
+import { useState } from "react";
 import { useLocation } from "wouter";
-import { DashboardLayoutSkeleton } from './DashboardLayoutSkeleton';
-import { Button } from "./ui/button";
 
-const menuItems = [
-  { icon: LayoutDashboard, label: "Page 1", path: "/" },
-  { icon: Users, label: "Page 2", path: "/some-path" },
+const navigation = [
+  { label: "Visão geral", path: "/", icon: LayoutDashboard },
+  { label: "Movimentações", path: "/transactions", icon: WalletCards },
+  { label: "Contas", path: "/accounts", icon: Building2 },
+  { label: "Categorias", path: "/categories", icon: Tags },
+  { label: "Relatórios", path: "/reports", icon: FileBarChart2 },
 ];
 
-const SIDEBAR_WIDTH_KEY = "sidebar-width";
-const DEFAULT_WIDTH = 280;
-const MIN_WIDTH = 200;
-const MAX_WIDTH = 480;
-
-export default function DashboardLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
-  const [sidebarWidth, setSidebarWidth] = useState(() => {
-    const saved = localStorage.getItem(SIDEBAR_WIDTH_KEY);
-    return saved ? parseInt(saved, 10) : DEFAULT_WIDTH;
-  });
-  const { loading, user } = useAuth();
-
-  useEffect(() => {
-    localStorage.setItem(SIDEBAR_WIDTH_KEY, sidebarWidth.toString());
-  }, [sidebarWidth]);
-
-  if (loading) {
-    return <DashboardLayoutSkeleton />
-  }
-
-  if (!user) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="flex flex-col items-center gap-8 p-8 max-w-md w-full">
-          <div className="flex flex-col items-center gap-6">
-            <h1 className="text-2xl font-semibold tracking-tight text-center">
-              Sign in to continue
-            </h1>
-            <p className="text-sm text-muted-foreground text-center max-w-sm">
-              Access to this dashboard requires authentication. Continue to launch the login flow.
-            </p>
-          </div>
-          <Button
-            onClick={() => startLogin()}
-            size="lg"
-            className="w-full shadow-lg hover:shadow-xl transition-all"
-          >
-            Sign in
-          </Button>
-        </div>
-      </div>
-    );
-  }
-
-  return (
-    <SidebarProvider
-      style={
-        {
-          "--sidebar-width": `${sidebarWidth}px`,
-        } as CSSProperties
-      }
-    >
-      <DashboardLayoutContent setSidebarWidth={setSidebarWidth}>
-        {children}
-      </DashboardLayoutContent>
-    </SidebarProvider>
-  );
-}
-
-type DashboardLayoutContentProps = {
-  children: React.ReactNode;
-  setSidebarWidth: (width: number) => void;
-};
-
-function DashboardLayoutContent({
-  children,
-  setSidebarWidth,
-}: DashboardLayoutContentProps) {
-  const { user, logout } = useAuth();
+export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+  const [mobileOpen, setMobileOpen] = useState(false);
   const [location, setLocation] = useLocation();
-  const { state, toggleSidebar } = useSidebar();
-  const isCollapsed = state === "collapsed";
-  const [isResizing, setIsResizing] = useState(false);
-  const sidebarRef = useRef<HTMLDivElement>(null);
-  const activeMenuItem = menuItems.find(item => item.path === location);
-  const isMobile = useIsMobile();
+  const { user, logout } = useAuth();
 
-  useEffect(() => {
-    if (isCollapsed) {
-      setIsResizing(false);
-    }
-  }, [isCollapsed]);
-
-  useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
-      if (!isResizing) return;
-
-      const sidebarLeft = sidebarRef.current?.getBoundingClientRect().left ?? 0;
-      const newWidth = e.clientX - sidebarLeft;
-      if (newWidth >= MIN_WIDTH && newWidth <= MAX_WIDTH) {
-        setSidebarWidth(newWidth);
-      }
-    };
-
-    const handleMouseUp = () => {
-      setIsResizing(false);
-    };
-
-    if (isResizing) {
-      document.addEventListener("mousemove", handleMouseMove);
-      document.addEventListener("mouseup", handleMouseUp);
-      document.body.style.cursor = "col-resize";
-      document.body.style.userSelect = "none";
-    }
-
-    return () => {
-      document.removeEventListener("mousemove", handleMouseMove);
-      document.removeEventListener("mouseup", handleMouseUp);
-      document.body.style.cursor = "";
-      document.body.style.userSelect = "";
-    };
-  }, [isResizing, setSidebarWidth]);
+  const goTo = (path: string) => {
+    setLocation(path);
+    setMobileOpen(false);
+  };
 
   return (
-    <>
-      <div className="relative" ref={sidebarRef}>
-        <Sidebar
-          collapsible="icon"
-          className="border-r-0"
-          disableTransition={isResizing}
-        >
-          <SidebarHeader className="h-16 justify-center">
-            <div className="flex items-center gap-3 px-2 transition-all w-full">
-              <button
-                onClick={toggleSidebar}
-                className="h-8 w-8 flex items-center justify-center hover:bg-accent rounded-lg transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-ring shrink-0"
-                aria-label="Toggle navigation"
-              >
-                <PanelLeft className="h-4 w-4 text-muted-foreground" />
-              </button>
-              {!isCollapsed ? (
-                <div className="flex items-center gap-2 min-w-0">
-                  <span className="font-semibold tracking-tight truncate">
-                    Navigation
-                  </span>
-                </div>
-              ) : null}
-            </div>
-          </SidebarHeader>
+    <div className="min-h-screen bg-[#e7e7e4] text-[#171717]">
+      <aside className={`fixed inset-y-0 left-0 z-50 flex w-[268px] flex-col border-r border-[#303030] bg-[#111111] text-[#f1f1ed] transition-transform duration-200 lg:translate-x-0 ${mobileOpen ? "translate-x-0" : "-translate-x-full"}`}>
+        <div className="flex h-[92px] items-center justify-between border-b border-[#3b3b3b] px-6">
+          <button onClick={() => goTo("/")} className="text-left" aria-label="Ir para visão geral">
+            <div className="font-display text-[25px] font-black leading-none tracking-[-0.06em]">FINPILOT<span className="text-[#a3a3a0]">/</span></div>
+            <div className="mt-2 font-mono text-[9px] uppercase tracking-[0.28em] text-[#8e8e8b]">Controle operacional</div>
+          </button>
+          <button className="rounded-md p-2 text-[#8e8e8b] hover:bg-[#282828] lg:hidden" onClick={() => setMobileOpen(false)} aria-label="Fechar menu"><X size={18} /></button>
+        </div>
 
-          <SidebarContent className="gap-0">
-            <SidebarMenu className="px-2 py-1">
-              {menuItems.map(item => {
-                const isActive = location === item.path;
-                return (
-                  <SidebarMenuItem key={item.path}>
-                    <SidebarMenuButton
-                      isActive={isActive}
-                      onClick={() => setLocation(item.path)}
-                      tooltip={item.label}
-                      className={`h-10 transition-all font-normal`}
-                    >
-                      <item.icon
-                        className={`h-4 w-4 ${isActive ? "text-primary" : ""}`}
-                      />
-                      <span>{item.label}</span>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                );
-              })}
-            </SidebarMenu>
-          </SidebarContent>
+        <div className="border-b border-[#3b3b3b] px-4 py-5">
+          <div className="mb-2 font-mono text-[9px] uppercase tracking-[0.25em] text-[#777773]">Organização ativa</div>
+          <button className="flex w-full items-center justify-between border border-[#414141] bg-[#202020] px-3 py-3 text-left hover:bg-[#292929]">
+            <span><span className="block text-[13px] font-semibold">Oficina Norte</span><span className="mt-1 block font-mono text-[9px] uppercase tracking-[0.16em] text-[#92928d]">Operações · BR</span></span>
+            <ChevronDown size={15} className="text-[#9c9c97]" />
+          </button>
+        </div>
 
-          <SidebarFooter className="p-3">
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <button className="flex items-center gap-3 rounded-lg px-1 py-1 hover:bg-accent/50 transition-colors w-full text-left group-data-[collapsible=icon]:justify-center focus:outline-none focus-visible:ring-2 focus-visible:ring-ring">
-                  <Avatar className="h-9 w-9 border shrink-0">
-                    <AvatarFallback className="text-xs font-medium">
-                      {user?.name?.charAt(0).toUpperCase()}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div className="flex-1 min-w-0 group-data-[collapsible=icon]:hidden">
-                    <p className="text-sm font-medium truncate leading-none">
-                      {user?.name || "-"}
-                    </p>
-                    <p className="text-xs text-muted-foreground truncate mt-1.5">
-                      {user?.email || "-"}
-                    </p>
-                  </div>
-                </button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-48">
-                <DropdownMenuItem
-                  onClick={logout}
-                  className="cursor-pointer text-destructive focus:text-destructive"
-                >
-                  <LogOut className="mr-2 h-4 w-4" />
-                  <span>Sign out</span>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </SidebarFooter>
-        </Sidebar>
-        <div
-          className={`absolute top-0 right-0 w-1 h-full cursor-col-resize hover:bg-primary/20 transition-colors ${isCollapsed ? "hidden" : ""}`}
-          onMouseDown={() => {
-            if (isCollapsed) return;
-            setIsResizing(true);
-          }}
-          style={{ zIndex: 50 }}
-        />
-      </div>
-
-      <SidebarInset>
-        {isMobile && (
-          <div className="flex border-b h-14 items-center justify-between bg-background/95 px-2 backdrop-blur supports-[backdrop-filter]:backdrop-blur sticky top-0 z-40">
-            <div className="flex items-center gap-2">
-              <SidebarTrigger className="h-9 w-9 rounded-lg bg-background" />
-              <div className="flex items-center gap-3">
-                <div className="flex flex-col gap-1">
-                  <span className="tracking-tight text-foreground">
-                    {activeMenuItem?.label ?? "Menu"}
-                  </span>
-                </div>
-              </div>
-            </div>
+        <nav className="flex-1 px-3 py-6" aria-label="Navegação principal">
+          <div className="mb-3 px-3 font-mono text-[9px] uppercase tracking-[0.25em] text-[#777773]">Workspace</div>
+          <div className="space-y-1">
+            {navigation.map(item => {
+              const active = location === item.path;
+              const Icon = item.icon;
+              return <button key={item.path} onClick={() => goTo(item.path)} className={`group flex w-full items-center gap-3 border-l-2 px-3 py-3 text-left text-[13px] transition-colors ${active ? "border-[#f0f0ec] bg-[#2a2a2a] text-[#f6f6f2]" : "border-transparent text-[#999994] hover:bg-[#202020] hover:text-[#f1f1ed]"}`}><Icon size={16} strokeWidth={1.7} /><span>{item.label}</span>{active && <span className="ml-auto h-1.5 w-1.5 bg-[#f0f0ec]" />}</button>;
+            })}
           </div>
-        )}
-        <main className="flex-1 p-4">{children}</main>
-      </SidebarInset>
-    </>
+        </nav>
+
+        <div className="border-t border-[#3b3b3b] p-4">
+          <button onClick={() => goTo("/settings")} className="mb-2 flex w-full items-center gap-3 px-3 py-3 text-[12px] text-[#999994] hover:bg-[#202020] hover:text-[#f1f1ed]"><Settings2 size={16} strokeWidth={1.7} />Configurações</button>
+          {user ? <button onClick={logout} className="flex w-full items-center gap-3 px-3 py-3 text-[12px] text-[#999994] hover:bg-[#202020] hover:text-[#f1f1ed]"><LogOut size={16} strokeWidth={1.7} />Sair da sessão</button> : <button onClick={() => startLogin()} className="flex w-full items-center gap-3 px-3 py-3 text-[12px] text-[#999994] hover:bg-[#202020] hover:text-[#f1f1ed]"><LogOut size={16} strokeWidth={1.7} />Entrar na conta</button>}
+        </div>
+      </aside>
+
+      {mobileOpen && <button className="fixed inset-0 z-40 bg-black/50 lg:hidden" onClick={() => setMobileOpen(false)} aria-label="Fechar navegação" />}
+      <div className="lg:pl-[268px]">
+        <header className="sticky top-0 z-30 flex h-[72px] items-center justify-between border-b border-[#c4c4c0] bg-[#e7e7e4]/95 px-5 backdrop-blur lg:px-9">
+          <div className="flex items-center gap-3"><button onClick={() => setMobileOpen(true)} className="border border-[#aaa9a4] p-2 lg:hidden" aria-label="Abrir menu"><Menu size={18} /></button><span className="font-mono text-[10px] uppercase tracking-[0.24em] text-[#6a6a65]">Quarta-feira, 19 de agosto de 2026</span></div>
+          <div className="flex items-center gap-4"><span className="hidden font-mono text-[10px] uppercase tracking-[0.2em] text-[#6a6a65] sm:block">Dados atualizados há 4 min</span><div className="flex h-9 w-9 items-center justify-center bg-[#171717] font-display text-sm font-bold text-white">{user?.name?.slice(0, 1).toUpperCase() || "O"}</div></div>
+        </header>
+        <main>{children}</main>
+      </div>
+    </div>
   );
 }
