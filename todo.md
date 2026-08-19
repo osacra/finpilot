@@ -24,8 +24,8 @@
 
 ## Qualidade e entrega
 
-- [ ] Criar schema Drizzle e aplicar migração SQL no banco
-- [ ] Criar procedures tRPC e helpers de banco para cada domínio
+- [x] Criar schema Drizzle e aplicar migração SQL no banco
+- [x] Criar procedures tRPC e helpers de banco para cada domínio
 - [ ] Escrever testes Vitest para autorização, isolamento tenant e regras financeiras
 - [ ] Executar typecheck, testes e validação visual desktop/mobile
 - [ ] Salvar checkpoint final com todas as funcionalidades concluídas
@@ -62,3 +62,12 @@
 - [x] Registrar um commit específico da evolução visual somente após o ciclo validado de typecheck, Vitest e preview
 - [x] Atualizar o histórico de commits e o todo.md após publicar o commit visual no GitHub
 - [x] Publicar o ajuste final do todo.md após o commit visual c637c14
+- [x] Criar procedures e helpers para relatórios filtráveis e exportação CSV
+- [x] Criar procedures e helpers para consultar o histórico de auditoria por organização
+- [x] Criar procedures e helpers para listar membros e atualizar papéis
+- [x] Criar procedures e helpers para editar e excluir transações com auditoria
+- [x] Criar procedures e helpers para importar transações via CSV com validação
+- [x] Criar procedure de relatório filtrado com dados estruturados além da exportação CSV
+- [x] Validar pertencimento do membro-alvo e resultado da atualização de papel
+- [x] Exigir pertencimento à organização nas mutations de editar e excluir transações
+- [x] Validar conta e categoria por organização e registrar auditoria na importação CSV
