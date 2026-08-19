@@ -70,6 +70,12 @@ export async function getOrCreateDefaultOrganization(userId: number, userName?: 
   return created[0];
 }
 
+export async function listOrganizations(userId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select({ organization: organizations, membership: organizationMembers }).from(organizationMembers).innerJoin(organizations, eq(organizationMembers.organizationId, organizations.id)).where(eq(organizationMembers.userId, userId)).orderBy(organizations.name);
+}
+
 export async function getOrganizationForUser(userId: number, organizationId: number) {
   const db = await getDb();
   if (!db) return undefined;
@@ -127,6 +133,13 @@ export async function getDashboardSummary(organizationId: number, from: Date, to
   const accountRows = await db.select({ initialBalance: financialAccounts.initialBalance }).from(financialAccounts).where(and(eq(financialAccounts.organizationId, organizationId), sql`${financialAccounts.archivedAt} IS NULL`));
   const balance = accountRows.reduce((sum, row) => sum + Number(row.initialBalance), 0) + income - expense;
   return { balance: balance.toFixed(2), income: income.toFixed(2), expense: expense.toFixed(2), net: (income - expense).toFixed(2), accounts: Number(accounts[0]?.count ?? 0) };
+}
+
+export async function getDailyEvolution(organizationId: number, from: Date, to: Date) {
+  const db = await getDb();
+  if (!db) return [];
+  const rows = await db.select({ day: sql<string>`date(${financialTransactions.transactionDate})`, type: financialTransactions.type, total: sql<string>`coalesce(sum(${financialTransactions.amount}), 0)` }).from(financialTransactions).where(and(eq(financialTransactions.organizationId, organizationId), gte(financialTransactions.transactionDate, from), lte(financialTransactions.transactionDate, to))).groupBy(sql`date(${financialTransactions.transactionDate})`, financialTransactions.type).orderBy(sql`date(${financialTransactions.transactionDate})`);
+  return rows;
 }
 
 export async function getFinancialReport(organizationId: number, filters?: { from?: Date; to?: Date; accountId?: number; categoryId?: number; type?: "income" | "expense" }) {

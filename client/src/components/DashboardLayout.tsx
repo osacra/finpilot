@@ -1,5 +1,6 @@
 import { useAuth } from "@/_core/hooks/useAuth";
 import { startLogin } from "@/const";
+import { trpc } from "@/lib/trpc";
 import { Building2, ChevronDown, FileBarChart2, LayoutDashboard, LogOut, Menu, Settings2, Tags, WalletCards, X } from "lucide-react";
 import { useState } from "react";
 import { useLocation } from "wouter";
@@ -16,6 +17,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const [mobileOpen, setMobileOpen] = useState(false);
   const [location, setLocation] = useLocation();
   const { user, logout } = useAuth();
+  const workspace = trpc.workspace.current.useQuery(undefined, { enabled: Boolean(user), retry: false });
+  const canManageWorkspace = !workspace.data || workspace.data.membership.role === "admin";
 
   const goTo = (path: string) => {
     setLocation(path);
@@ -53,7 +56,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         </nav>
 
         <div className="border-t border-[#3b3b3b] p-4">
-          <button onClick={() => goTo("/settings")} className="mb-2 flex w-full items-center gap-3 px-3 py-3 text-[12px] text-[#999994] hover:bg-[#202020] hover:text-[#f1f1ed]"><Settings2 size={16} strokeWidth={1.7} />Configurações</button>
+          {canManageWorkspace && <button onClick={() => goTo("/settings")} className="mb-2 flex w-full items-center gap-3 px-3 py-3 text-[12px] text-[#999994] hover:bg-[#202020] hover:text-[#f1f1ed]"><Settings2 size={16} strokeWidth={1.7} />Configurações</button>}
           {user ? <button onClick={logout} className="flex w-full items-center gap-3 px-3 py-3 text-[12px] text-[#999994] hover:bg-[#202020] hover:text-[#f1f1ed]"><LogOut size={16} strokeWidth={1.7} />Sair da sessão</button> : <button onClick={() => startLogin()} className="flex w-full items-center gap-3 px-3 py-3 text-[12px] text-[#999994] hover:bg-[#202020] hover:text-[#f1f1ed]"><LogOut size={16} strokeWidth={1.7} />Entrar na conta</button>}
         </div>
       </aside>

@@ -2,32 +2,32 @@
 
 ## Escopo funcional
 
-- [ ] Criar organizações e garantir isolamento multi-tenant em todas as consultas e mutações
-- [ ] Implementar convite de membros e papéis de administrador e membro
-- [ ] Implementar gerenciamento de contas financeiras por organização
-- [ ] Implementar categorias de transações personalizáveis por organização
-- [ ] Implementar criação, edição, exclusão e listagem de receitas e despesas
-- [ ] Implementar dashboard com saldo total, receitas, despesas e evolução do período
-- [ ] Implementar relatórios com filtros por período, conta, categoria e tipo
-- [ ] Implementar importação de transações por CSV com validação e feedback de erros
-- [ ] Implementar exportação de relatórios em CSV
-- [ ] Implementar histórico de auditoria de alterações em transações
-- [ ] Restringir ações administrativas por papel e proteger rotas/procedures
+- [x] Criar organizações e garantir isolamento multi-tenant em todas as consultas e mutações
+- [x] Implementar convite de membros e papéis de administrador e membro
+- [x] Implementar gerenciamento de contas financeiras por organização
+- [x] Implementar categorias de transações personalizáveis por organização
+- [x] Implementar criação, edição, exclusão e listagem de receitas e despesas
+- [x] Implementar dashboard com saldo total, receitas, despesas e evolução do período
+- [x] Implementar relatórios com filtros por período, conta, categoria e tipo
+- [x] Implementar importação de transações via CSV com validação e feedback de erros
+- [x] Implementar exportação de relatórios em CSV
+- [x] Implementar histórico de auditoria de alterações em transações
+- [x] Restringir ações administrativas por papel e proteger rotas/procedures
 
 ## Direção visual e experiência
 
-- [ ] Aplicar identidade industrial moderna, brutalista e monocromática
-- [ ] Criar hierarquia tipográfica com títulos pesados e metadados em caixa alta espaçada
-- [ ] Implementar composição geométrica com blocos retangulares em tons de cinza
+- [x] Aplicar identidade industrial moderna, brutalista e monocromática
+- [x] Criar hierarquia tipográfica com títulos pesados e metadados em caixa alta espaçada
+- [x] Implementar composição geométrica com blocos retangulares em tons de cinza
 - [ ] Garantir estados de carregamento, vazio, erro e sucesso
-- [ ] Garantir responsividade e acessibilidade por teclado
+- [x] Garantir responsividade e acessibilidade por teclado
 
 ## Qualidade e entrega
 
 - [x] Criar schema Drizzle e aplicar migração SQL no banco
 - [x] Criar procedures tRPC e helpers de banco para cada domínio
 - [ ] Escrever testes Vitest para autorização, isolamento tenant e regras financeiras
-- [ ] Executar typecheck, testes e validação visual desktop/mobile
+- [x] Executar typecheck, testes e validação visual desktop/mobile
 - [ ] Salvar checkpoint final com todas as funcionalidades concluídas
 
 ## Histórico
@@ -71,3 +71,13 @@
 - [x] Validar pertencimento do membro-alvo e resultado da atualização de papel
 - [x] Exigir pertencimento à organização nas mutations de editar e excluir transações
 - [x] Validar conta e categoria por organização e registrar auditoria na importação CSV
+- [ ] Implementar criação e seleção de múltiplas organizações na UI e backend
+- [ ] Criar fluxo completo de convites: envio, aceite e associação do membro à organização
+- [ ] Adicionar gestão completa de contas e categorias na interface
+- [ ] Conectar edição/exclusão de transações à UI e cobrir com testes de autorização/tenant
+- [ ] Substituir dados hardcoded do dashboard por séries reais de evolução
+- [ ] Implementar tela de relatórios com filtros funcionais e ação de exportação CSV
+- [ ] Implementar importação CSV na UI com upload, validação e mensagens de erro/sucesso
+- [ ] Adicionar tela consultável de auditoria e reforçar RBAC na navegação
+- [ ] Validar e ajustar acessibilidade por teclado nas telas principais, incluindo foco visível, ordem de tabulação e fechamento do modal por ESC
+- [ ] Registrar evidência da checagem de acessibilidade por teclado antes de consolidar o marco

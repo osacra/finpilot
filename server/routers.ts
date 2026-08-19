@@ -1,11 +1,11 @@
 import { COOKIE_NAME } from "@shared/const";
 import { and, eq } from "drizzle-orm";
 import { z } from "zod";
-import { financialAccounts, financialTransactions, organizationInvitations, organizationMembers, transactionCategories } from "../drizzle/schema";
+import { financialAccounts, financialTransactions, organizationInvitations, organizationMembers, organizations, transactionCategories } from "../drizzle/schema";
 import { getSessionCookieOptions } from "./_core/cookies";
 import { systemRouter } from "./_core/systemRouter";
 import { protectedProcedure, publicProcedure, router } from "./_core/trpc";
-import { createAuditLog, getAuditLogs, getDashboardSummary, getDb, getFinancialReport, getOrCreateDefaultOrganization, getOrganizationForUser, listAccounts, listCategories, listMembers, listTransactions, parseCsv, transactionsToCsv } from "./db";
+import { createAuditLog, getAuditLogs, getDashboardSummary, getDailyEvolution, getDb, getFinancialReport, getOrCreateDefaultOrganization, listOrganizations, getOrganizationForUser, listAccounts, listCategories, listMembers, listTransactions, parseCsv, transactionsToCsv } from "./db";
 
 const dateInput = z.coerce.date();
 
@@ -32,6 +32,9 @@ export const appRouter = router({
     logout: publicProcedure.mutation(({ ctx }) => { const cookieOptions = getSessionCookieOptions(ctx.req); ctx.res.clearCookie(COOKIE_NAME, { ...cookieOptions, maxAge: -1 }); return { success: true } as const; }),
   }),
   workspace: router({
+    list: protectedProcedure.query(({ ctx }) => listOrganizations(ctx.user.id)),
+    create: protectedProcedure.input(z.object({ name: z.string().min(2).max(160) })).mutation(async ({ ctx, input }) => { const db = await getDb(); if (!db) throw new Error("Database unavailable"); const slug = `${input.name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "")}-${ctx.user.id}-${Date.now()}`; const created = await db.insert(organizations).values({ name: input.name, slug, createdBy: ctx.user.id }); const organizationId = Number((created as unknown as { insertId: number }).insertId); await db.insert(organizationMembers).values({ organizationId, userId: ctx.user.id, role: "admin" }); return { success: true, organizationId } as const; }),
+    acceptInvite: protectedProcedure.input(z.object({ token: z.string().min(10) })).mutation(async ({ ctx, input }) => { const db = await getDb(); if (!db) throw new Error("Database unavailable"); const invitation = await db.select().from(organizationInvitations).where(and(eq(organizationInvitations.token, input.token), eq(organizationInvitations.status, "pending"))).limit(1); if (!invitation[0] || invitation[0].expiresAt < new Date() || (ctx.user.email && invitation[0].email.toLowerCase() !== ctx.user.email.toLowerCase())) throw new Error("Invitation is invalid or expired"); await db.insert(organizationMembers).values({ organizationId: invitation[0].organizationId, userId: ctx.user.id, role: invitation[0].role }); await db.update(organizationInvitations).set({ status: "accepted" }).where(eq(organizationInvitations.id, invitation[0].id)); return { success: true, organizationId: invitation[0].organizationId } as const; }),
     current: protectedProcedure.query(async ({ ctx }) => {
       const workspace = await getOrCreateDefaultOrganization(ctx.user.id, ctx.user.name);
       const [accounts, categories] = await Promise.all([listAccounts(workspace.organization.id), listCategories(workspace.organization.id)]);
@@ -47,6 +50,7 @@ export const appRouter = router({
   accounts: router({
     list: protectedProcedure.input(z.object({ organizationId: z.number().optional() }).optional()).query(async ({ ctx, input }) => { const workspace = await resolveWorkspace(ctx.user.id, input?.organizationId); return listAccounts(workspace.organization.id); }),
     create: protectedProcedure.input(z.object({ organizationId: z.number(), name: z.string().min(2).max(140), type: z.enum(["checking", "savings", "credit_card", "cash", "investment", "other"]), initialBalance: z.coerce.number().default(0) })).mutation(async ({ ctx, input }) => { await requireAdmin(ctx.user.id, input.organizationId); const db = await getDb(); if (!db) throw new Error("Database unavailable"); await db.insert(financialAccounts).values({ organizationId: input.organizationId, name: input.name, type: input.type, initialBalance: input.initialBalance.toFixed(2) }); return { success: true } as const; }),
+    archive: protectedProcedure.input(z.object({ organizationId: z.number(), id: z.number() })).mutation(async ({ ctx, input }) => { await requireAdmin(ctx.user.id, input.organizationId); const db = await getDb(); if (!db) throw new Error("Database unavailable"); await db.update(financialAccounts).set({ archivedAt: new Date() }).where(and(eq(financialAccounts.id, input.id), eq(financialAccounts.organizationId, input.organizationId))); return { success: true } as const; }),
   }),
   categories: router({
     list: protectedProcedure.input(z.object({ organizationId: z.number().optional() }).optional()).query(async ({ ctx, input }) => { const workspace = await resolveWorkspace(ctx.user.id, input?.organizationId); return listCategories(workspace.organization.id); }),
@@ -65,7 +69,7 @@ export const appRouter = router({
     exportCsv: protectedProcedure.input(z.object({ organizationId: z.number().optional(), from: dateInput.optional(), to: dateInput.optional(), accountId: z.number().optional(), categoryId: z.number().optional(), type: z.enum(["income", "expense"]).optional() }).optional()).query(async ({ ctx, input }) => { const workspace = await resolveWorkspace(ctx.user.id, input?.organizationId); const rows = await listTransactions(workspace.organization.id, input); return { filename: `finpilot-${new Date().toISOString().slice(0, 10)}.csv`, csv: transactionsToCsv(rows) }; }),
   }),
   dashboard: router({
-    summary: protectedProcedure.input(z.object({ organizationId: z.number().optional(), from: dateInput.optional(), to: dateInput.optional() }).optional()).query(async ({ ctx, input }) => { const workspace = await resolveWorkspace(ctx.user.id, input?.organizationId); const now = new Date(); const from = input?.from ?? new Date(now.getFullYear(), now.getMonth(), 1); const to = input?.to ?? now; return { organization: workspace.organization, membership: workspace.membership, summary: await getDashboardSummary(workspace.organization.id, from, to) }; }),
+    summary: protectedProcedure.input(z.object({ organizationId: z.number().optional(), from: dateInput.optional(), to: dateInput.optional() }).optional()).query(async ({ ctx, input }) => { const workspace = await resolveWorkspace(ctx.user.id, input?.organizationId); const now = new Date(); const from = input?.from ?? new Date(now.getFullYear(), now.getMonth(), 1); const to = input?.to ?? now; return { organization: workspace.organization, membership: workspace.membership, summary: await getDashboardSummary(workspace.organization.id, from, to), evolution: await getDailyEvolution(workspace.organization.id, from, to) }; }),
   }),
 });
 
