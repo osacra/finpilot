@@ -1,0 +1,49 @@
+# FinPilot — Project TODO
+
+## Escopo funcional
+
+- [ ] Criar organizações e garantir isolamento multi-tenant em todas as consultas e mutações
+- [ ] Implementar convite de membros e papéis de administrador e membro
+- [ ] Implementar gerenciamento de contas financeiras por organização
+- [ ] Implementar categorias de transações personalizáveis por organização
+- [ ] Implementar criação, edição, exclusão e listagem de receitas e despesas
+- [ ] Implementar dashboard com saldo total, receitas, despesas e evolução do período
+- [ ] Implementar relatórios com filtros por período, conta, categoria e tipo
+- [ ] Implementar importação de transações por CSV com validação e feedback de erros
+- [ ] Implementar exportação de relatórios em CSV
+- [ ] Implementar histórico de auditoria de alterações em transações
+- [ ] Restringir ações administrativas por papel e proteger rotas/procedures
+
+## Direção visual e experiência
+
+- [ ] Aplicar identidade industrial moderna, brutalista e monocromática
+- [ ] Criar hierarquia tipográfica com títulos pesados e metadados em caixa alta espaçada
+- [ ] Implementar composição geométrica com blocos retangulares em tons de cinza
+- [ ] Garantir estados de carregamento, vazio, erro e sucesso
+- [ ] Garantir responsividade e acessibilidade por teclado
+
+## Qualidade e entrega
+
+- [ ] Criar schema Drizzle e aplicar migração SQL no banco
+- [ ] Criar procedures tRPC e helpers de banco para cada domínio
+- [ ] Escrever testes Vitest para autorização, isolamento tenant e regras financeiras
+- [ ] Executar typecheck, testes e validação visual desktop/mobile
+- [ ] Salvar checkpoint final com todas as funcionalidades concluídas
+
+## Histórico
+
+- Escopo inicial registrado após definição do produto pelo usuário.
+
+## Decisões de arquitetura
+
+- Frontend: React 19, TypeScript, Tailwind CSS 4, shadcn/ui e Recharts.
+- Backend: Express, tRPC 11 e Drizzle ORM.
+- Persistência: banco MySQL/TiDB provisionado pelo template, com timestamps UTC.
+- Autenticação: Manus OAuth já integrado no projeto.
+- Armazenamento: S3 via helpers do template para arquivos CSV, quando necessário.
+- Integrações externas: nenhuma será adicionada no MVP sem requisito explícito.
+- Identidade visual: somente escala de cinzas na interface principal; nenhum destaque cromático fora dessa escala.
+
+- [ ] Configurar repositório privado no GitHub e sincronizar commits por marcos
+- [ ] Executar cada ciclo localmente com typecheck, Vitest e preview antes do commit
+- [ ] Registrar no histórico de commits a evolução por etapa funcional
