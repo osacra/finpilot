@@ -4,6 +4,12 @@
 
 > O projeto está em estágio de MVP. A interface e os contratos principais estão implementados, mas os fluxos autenticados devem ser validados com um banco preenchido e uma configuração válida de OAuth.
 
+## Preview
+
+![FinPilot dashboard](docs/screenshots/dashboard.webp)
+
+A imagem acima mostra o dashboard com dados sintéticos de demonstração: organização ativa, saldo consolidado, receitas, despesas, resultado líquido, fluxo de caixa e movimentações recentes. Ela representa o estado visual do MVP e não deve ser interpretada como uma conexão com dados financeiros reais.
+
 ## Stack
 
 | Camada | Tecnologia |
