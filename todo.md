@@ -61,4 +61,4 @@
 - [x] Rodar novamente typecheck, Vitest e preview e só então registrar o commit da evolução visual
 - [x] Registrar um commit específico da evolução visual somente após o ciclo validado de typecheck, Vitest e preview
 - [x] Atualizar o histórico de commits e o todo.md após publicar o commit visual no GitHub
-- [ ] Publicar o ajuste final do todo.md após o commit visual c637c14
+- [x] Publicar o ajuste final do todo.md após o commit visual c637c14
