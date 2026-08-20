@@ -1,14 +1,14 @@
 # FinPilot
 
-**FinPilot** é uma plataforma web de gestão financeira multi-tenant para organizações. O projeto é desenvolvido e mantido por **osacra** e segue uma direção industrial, monocromática e brutalista, com foco em isolamento entre organizações, rastreabilidade e operações financeiras verificáveis.
+**FinPilot** é uma plataforma web de gestão financeira multi-tenant para organizações. O projeto é desenvolvido e mantido por **Arthur Sacramento** e segue uma direção industrial, monocromática e brutalista, com foco em isolamento entre organizações, rastreabilidade e operações financeiras verificáveis.
 
 > O projeto está em estágio de MVP. A interface e os contratos principais estão implementados, mas os fluxos autenticados devem ser validados com um banco preenchido e uma configuração válida de OAuth.
 
 ## Preview
 
-![FinPilot dashboard](docs/screenshots/dashboard.webp)
+![FinPilot dashboard](docs/screenshots/finpilot-dashboard.webp)
 
-A imagem acima mostra o dashboard com dados sintéticos de demonstração: organização ativa, saldo consolidado, receitas, despesas, resultado líquido, fluxo de caixa e movimentações recentes. Ela representa o estado visual do MVP e não deve ser interpretada como uma conexão com dados financeiros reais.
+A imagem acima mostra o dashboard com dados sintéticos de demonstração: organização ativa, saldo consolidado, receitas, despesas, resultado líquido, fluxo de caixa e movimentações recentes. Ela foi capturada durante a execução local do frontend e não deve ser interpretada como uma conexão com dados financeiros reais.
 
 ## Stack
 
@@ -20,7 +20,7 @@ A imagem acima mostra o dashboard com dados sintéticos de demonstração: organ
 | Autenticação | Manus OAuth integrado ao template |
 | Testes | Vitest |
 | Arquivos | S3-compatible storage para arquivos e referências de upload |
-| Versionamento | Git e GitHub, com commits atribuídos a `osacra` |
+| Versionamento | Git e GitHub, com commits atribuídos a Arthur Sacramento |
 
 ## Executar localmente
 
@@ -131,8 +131,8 @@ todo.md                                # histórico verificável de escopo e evo
 O repositório oficial é [github.com/osacra/finpilot](https://github.com/osacra/finpilot). Para manter os commits vinculados ao seu perfil:
 
 ```bash
-git config user.name "osacra"
-git config user.email "osacra@users.noreply.github.com"
+git config user.name "Arthur Sacramento"
+git config user.email "sacrarthur06@gmail.com"
 git status
 git log --oneline --decorate -10
 ```
@@ -161,4 +161,4 @@ A criação de convite retorna um token para compartilhamento manual; o envio de
 
 ## Licença e autoria
 
-Projeto desenvolvido e mantido por **osacra**.
+Projeto desenvolvido e mantido por **Arthur Sacramento**.
