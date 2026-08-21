@@ -56,14 +56,15 @@ No preview gerenciado do projeto, as variáveis internas são injetadas automati
 
 ### Banco de dados
 
-Em um banco novo, revise o `DATABASE_URL` e aplique as migrações:
+Em um banco novo, revise o `DATABASE_URL` e aplique o schema com o comando do projeto:
 
 ```bash
-pnpm drizzle-kit generate
 pnpm db:push
 ```
 
-As migrações criam a autenticação e as estruturas financeiras: organizações, membros, convites, contas, categorias, transações e auditoria. Em um banco já migrado, não execute comandos destrutivos sem revisar o SQL gerado e comparar o journal de migrações.
+O script `db:push` executa `drizzle-kit generate` e, em seguida, `drizzle-kit migrate`. Portanto, não é necessário executar `pnpm drizzle-kit generate` separadamente. O comando gera os arquivos SQL a partir do schema e aplica as migrations pendentes ao banco configurado.
+
+As migrations criam a autenticação e as estruturas financeiras: organizações, membros, convites, contas, categorias, transações e auditoria. Em um banco já migrado, não execute comandos destrutivos sem revisar o SQL gerado e comparar o journal de migrations.
 
 ### Iniciar o servidor
 
@@ -84,8 +85,7 @@ A tela sem login pode exibir um estado vazio ou um aviso de sessão. Para consul
 | `pnpm test` | Executa a suíte Vitest |
 | `pnpm build` | Gera o bundle de produção do frontend e servidor |
 | `pnpm start` | Inicia o bundle de produção compilado |
-| `pnpm drizzle-kit generate` | Gera SQL a partir do schema Drizzle |
-| `pnpm db:push` | Aplica as migrações configuradas ao banco local |
+| `pnpm db:push` | Gera o SQL do schema e aplica as migrations pendentes ao banco |
 | `pnpm format` | Formata os arquivos com Prettier |
 
 Antes de abrir um pull request ou publicar uma evolução, execute:
